@@ -147,6 +147,59 @@ const Index = () => {
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
+              <h2 className="mb-4">Наши программы</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Выберите программу, которая подходит именно вам
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {[
+                {
+                  title: "Снижение веса",
+                  description: "Похудение без стресса и голода",
+                  link: "/programs/weight-loss",
+                  color: "from-primary to-primary-glow",
+                },
+                {
+                  title: "Набор массы",
+                  description: "Эффективный рост мышц",
+                  link: "/programs/muscle-gain",
+                  color: "from-accent to-secondary",
+                },
+                {
+                  title: "Здоровый образ жизни",
+                  description: "Баланс и энергия",
+                  link: "/programs/healthy-lifestyle",
+                  color: "from-primary to-accent",
+                },
+              ].map((program, index) => (
+                <Link key={index} to={program.link}>
+                  <Card className="border-none shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 h-full cursor-pointer group">
+                    <CardContent className="p-8 text-center">
+                      <div className={`bg-gradient-to-r ${program.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform`}>
+                        <Heart className="h-8 w-8 text-white" />
+                      </div>
+                      <h3 className="mb-3">{program.title}</h3>
+                      <p className="text-muted-foreground">{program.description}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Button asChild variant="outline" size="lg">
+                <Link to="/programs">Все программы</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Tools Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
               <h2 className="mb-4">Полезные инструменты</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Воспользуйтесь нашими онлайн-инструментами для достижения ваших целей

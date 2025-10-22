@@ -9,6 +9,7 @@ const Navbar = () => {
 
   const navItems = [
     { to: "/", label: "Главная" },
+    { to: "/programs", label: "Программы" },
     { to: "/about", label: "О специалисте" },
     { to: "/blog", label: "Блог" },
     { to: "/products", label: "База продуктов" },
