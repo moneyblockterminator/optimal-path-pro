@@ -5,6 +5,7 @@ import { CheckCircle2, Calendar, Calculator, BookOpen, MessageSquare, Award, Use
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DiscountPopup from "@/components/DiscountPopup";
+import { FloatingConsultationButton } from "@/components/FloatingConsultationButton";
 import heroImage from "@/assets/hero-nutrition.jpg";
 import consultationImage from "@/assets/consultation.jpg";
 import mealPlanningImage from "@/assets/meal-planning.jpg";
@@ -267,6 +268,7 @@ const Index = () => {
       </main>
 
       <Footer />
+      <FloatingConsultationButton />
     </div>
   );
 };

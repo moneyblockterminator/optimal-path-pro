@@ -22,13 +22,23 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Навигация</h3>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                  О специалисте
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="text-muted-foreground hover:text-primary transition-colors">
+                  Услуги
+                </Link>
+              </li>
+              <li>
                 <Link to="/programs" className="text-muted-foreground hover:text-primary transition-colors">
                   Программы
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  О специалисте
+                <Link to="/news" className="text-muted-foreground hover:text-primary transition-colors">
+                  Новости
                 </Link>
               </li>
               <li>
