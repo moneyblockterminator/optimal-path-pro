@@ -9,12 +9,13 @@ const Navbar = () => {
 
   const navItems = [
     { to: "/", label: "Главная" },
-    { to: "/programs", label: "Программы" },
     { to: "/about", label: "О специалисте" },
+    { to: "/services", label: "Услуги" },
+    { to: "/programs", label: "Программы" },
+    { to: "/news", label: "Новости" },
     { to: "/blog", label: "Блог" },
     { to: "/products", label: "База продуктов" },
-    { to: "/calculator", label: "Калькулятор калорий" },
-    { to: "/quiz", label: "Подбор программы" },
+    { to: "/calculator", label: "Калькулятор" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
