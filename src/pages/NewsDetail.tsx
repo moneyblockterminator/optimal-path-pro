@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Share2, Bookmark, Heart, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Extended news data with full content
@@ -16,7 +16,9 @@ const newsData = [
     category: "Исследования",
     date: "2024-03-15",
     readTime: "5 мин",
-    image: "/placeholder.svg",
+    author: "Анна Петрова",
+    authorRole: "Главный нутрициолог",
+    image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1200&h=800&fit=crop",
     content: `
       <h2>Преимущества средиземноморской диеты</h2>
       <p>Средиземноморская диета давно признана одной из самых полезных систем питания в мире. Новые исследования, проведенные международной группой ученых, подтвердили множество преимуществ этого подхода к питанию.</p>
@@ -29,6 +31,10 @@ const newsData = [
         <li>Более низкий уровень воспалительных процессов в организме</li>
         <li>Повышенную продолжительность жизни</li>
       </ul>
+      
+      <blockquote>
+        «Средиземноморская диета — это не просто система питания, это образ жизни, который помогает поддерживать здоровье на протяжении многих лет»
+      </blockquote>
       
       <h3>Ключевые компоненты диеты</h3>
       <p>Средиземноморская диета включает:</p>
@@ -51,7 +57,9 @@ const newsData = [
     category: "Полезные советы",
     date: "2024-03-12",
     readTime: "7 мин",
-    image: "/placeholder.svg",
+    author: "Мария Соколова",
+    authorRole: "Эксперт по питанию",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=800&fit=crop",
     content: `
       <h2>Руководство по чтению этикеток</h2>
       <p>Понимание информации на этикетках продуктов — важный навык для поддержания здорового образа жизни.</p>
@@ -63,6 +71,10 @@ const newsData = [
         <li><strong>Добавленные сахара:</strong> Могут скрываться под разными названиями</li>
         <li><strong>Срок годности:</strong> Разница между "употребить до" и "годен до"</li>
       </ul>
+      
+      <blockquote>
+        «Осознанный выбор продуктов — первый шаг к здоровому питанию»
+      </blockquote>
       
       <h3>Скрытые сахара</h3>
       <p>Сахар может быть указан как: сироп глюкозы, фруктоза, декстроза, мальтоза, патока и другие.</p>
@@ -78,7 +90,9 @@ const newsData = [
     category: "Сезонное питание",
     date: "2024-03-10",
     readTime: "4 мин",
-    image: "/placeholder.svg",
+    author: "Анна Петрова",
+    authorRole: "Главный нутрициолог",
+    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=1200&h=800&fit=crop",
     content: `
       <h2>Весенние продукты для здоровья</h2>
       <p>Март — время обновления рациона свежими сезонными продуктами.</p>
@@ -102,7 +116,9 @@ const newsData = [
     category: "Разбор мифов",
     date: "2024-03-08",
     readTime: "6 мин",
-    image: "/placeholder.svg",
+    author: "Дмитрий Волков",
+    authorRole: "Спортивный нутрициолог",
+    image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=1200&h=800&fit=crop",
     content: `
       <h2>Разбор популярных мифов</h2>
       <p>Белковые диеты окружены множеством мифов и заблуждений.</p>
@@ -124,7 +140,9 @@ const newsData = [
     category: "Здоровье",
     date: "2024-03-05",
     readTime: "5 мин",
-    image: "/placeholder.svg",
+    author: "Елена Морозова",
+    authorRole: "Нутрициолог-консультант",
+    image: "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?w=1200&h=800&fit=crop",
     content: `
       <h2>Связь питания и сна</h2>
       <p>То, что мы едим, напрямую влияет на качество нашего сна.</p>
@@ -137,6 +155,10 @@ const newsData = [
         <li><strong>Жирная рыба:</strong> Омега-3 и витамин D</li>
         <li><strong>Бананы:</strong> Магний и триптофан</li>
       </ul>
+      
+      <blockquote>
+        «Правильный ужин — залог крепкого и восстанавливающего сна»
+      </blockquote>
       
       <h3>Чего избегать перед сном</h3>
       <ul>
@@ -157,7 +179,9 @@ const newsData = [
     category: "Исследования",
     date: "2024-03-01",
     readTime: "4 мин",
-    image: "/placeholder.svg",
+    author: "Анна Петрова",
+    authorRole: "Главный нутрициолог",
+    image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=1200&h=800&fit=crop",
     content: `
       <h2>Научный взгляд на гидратацию</h2>
       <p>Миф о "8 стаканах воды в день" не имеет научного обоснования.</p>
@@ -185,10 +209,40 @@ const newsData = [
   }
 ];
 
+// Related articles
+const getRelatedArticles = (currentId: number, category: string) => {
+  return newsData
+    .filter(news => news.id !== currentId)
+    .slice(0, 3);
+};
+
 const NewsDetail = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [readProgress, setReadProgress] = useState(0);
+  
   const article = newsData.find(news => news.id === Number(id));
+  const relatedArticles = article ? getRelatedArticles(article.id, article.category) : [];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      setReadProgress(progress);
+      setShowScrollTop(scrollTop > 500);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -206,14 +260,29 @@ const NewsDetail = () => {
     }
   };
 
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    toast({
+      title: isLiked ? "Убрано из избранного" : "Добавлено в избранное",
+    });
+  };
+
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+    toast({
+      title: isSaved ? "Удалено из закладок" : "Сохранено в закладки",
+    });
+  };
+
   if (!article) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4 text-foreground">Статья не найдена</h1>
-            <Button asChild>
+            <h1 className="font-serif text-5xl md:text-6xl font-semibold mb-6 text-foreground">Статья не найдена</h1>
+            <p className="text-muted-foreground mb-8 text-lg">К сожалению, запрашиваемая статья не существует</p>
+            <Button asChild size="lg">
               <Link to="/news">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Вернуться к новостям
@@ -228,96 +297,220 @@ const NewsDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Reading Progress Bar */}
+      <div 
+        className="fixed top-0 left-0 h-1 bg-primary z-50 transition-all duration-150"
+        style={{ width: `${readProgress}%` }}
+      />
+      
       <Navbar />
       
-      {/* Article Header */}
-      <article className="pt-24 pb-16 flex-1">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="mb-8">
-            <Button variant="ghost" asChild className="mb-4">
-              <Link to="/news">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Назад к новостям
-              </Link>
-            </Button>
-          </div>
-
-          <div className="animate-fade-in">
-            {/* Category and Metadata */}
-            <div className="flex items-center gap-4 mb-4 flex-wrap">
-              <Badge variant="secondary" className="text-sm">{article.category}</Badge>
-              <div className="flex items-center text-sm text-muted-foreground gap-4">
-                <span className="flex items-center gap-1">
-                  <Calendar size={16} />
-                  {new Date(article.date).toLocaleDateString('ru-RU', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock size={16} />
-                  {article.readTime}
-                </span>
+      {/* Hero Section with Full-Width Image */}
+      <section className="relative h-[70vh] min-h-[500px] overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={article.image} 
+            alt={article.title} 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        </div>
+        
+        {/* Hero Content */}
+        <div className="absolute bottom-0 left-0 right-0 pb-16">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <div className="animate-slide-up">
+              {/* Category Badge */}
+              <Badge 
+                className="mb-6 px-4 py-1.5 text-sm font-medium bg-primary/90 text-primary-foreground border-0 backdrop-blur-sm"
+              >
+                {article.category}
+              </Badge>
+              
+              {/* Title */}
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold mb-6 text-foreground leading-tight">
+                {article.title}
+              </h1>
+              
+              {/* Meta Info */}
+              <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-sm font-medium text-primary">
+                      {article.author.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-foreground font-medium text-sm">{article.author}</p>
+                    <p className="text-xs text-muted-foreground">{article.authorRole}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={14} />
+                    {new Date(article.date).toLocaleDateString('ru-RU', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={14} />
+                    {article.readTime} чтения
+                  </span>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+        
+        {/* Back Button */}
+        <div className="absolute top-24 left-4 md:left-8">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild 
+            className="bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background"
+          >
+            <Link to="/news">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Назад
+            </Link>
+          </Button>
+        </div>
+      </section>
 
-            {/* Title */}
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-              {article.title}
-            </h1>
-
-            {/* Excerpt */}
-            <p className="text-xl text-muted-foreground mb-8">
+      {/* Article Content */}
+      <article className="py-16 flex-1">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            {/* Excerpt/Lead */}
+            <p className="text-xl md:text-2xl text-muted-foreground font-light leading-relaxed mb-12 font-serif italic">
               {article.excerpt}
             </p>
-
-            {/* Share Button */}
-            <div className="mb-8">
-              <Button variant="outline" size="sm" onClick={handleShare}>
-                <Share2 className="mr-2 h-4 w-4" />
-                Поделиться
-              </Button>
+            
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-12">
+              <div className="flex-1 h-px bg-border" />
+              <div className="w-2 h-2 rounded-full bg-primary" />
+              <div className="flex-1 h-px bg-border" />
             </div>
 
-            {/* Featured Image */}
-            <div className="aspect-video bg-muted rounded-lg overflow-hidden mb-12">
-              <img 
-                src={article.image} 
-                alt={article.title} 
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Article Content */}
+            {/* Article Body */}
             <div 
-              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-li:text-foreground/90"
+              className="prose prose-lg max-w-none 
+                prose-headings:font-serif prose-headings:font-semibold prose-headings:text-foreground
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
+                prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4
+                prose-p:text-foreground/85 prose-p:leading-relaxed prose-p:mb-6
+                prose-strong:text-foreground prose-strong:font-semibold
+                prose-li:text-foreground/85 prose-li:mb-2
+                prose-ul:my-6 prose-ul:pl-0
+                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/50 
+                prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:my-8 prose-blockquote:rounded-r-lg
+                prose-blockquote:text-xl prose-blockquote:font-serif prose-blockquote:italic prose-blockquote:text-foreground/90
+                prose-blockquote:not-italic"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
 
-            {/* Share Section */}
-            <div className="mt-12 pt-8 border-t">
-              <div className="flex items-center justify-between">
-                <p className="text-muted-foreground">Понравилась статья? Поделитесь с друзьями!</p>
-                <Button onClick={handleShare}>
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Поделиться
+            {/* Action Bar */}
+            <div className="flex items-center justify-between mt-16 pt-8 border-t border-border">
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={handleLike}
+                  className={`gap-2 ${isLiked ? 'text-red-500 border-red-200 bg-red-50 hover:bg-red-100' : ''}`}
+                >
+                  <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
+                  {isLiked ? 'Понравилось' : 'Нравится'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={handleSave}
+                  className={`gap-2 ${isSaved ? 'text-primary border-primary/30 bg-primary/5 hover:bg-primary/10' : ''}`}
+                >
+                  <Bookmark className={`h-5 w-5 ${isSaved ? 'fill-current' : ''}`} />
+                  {isSaved ? 'Сохранено' : 'Сохранить'}
                 </Button>
               </div>
-            </div>
-
-            {/* Back to News */}
-            <div className="mt-12 text-center">
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/news">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Вернуться к новостям
-                </Link>
+              <Button onClick={handleShare} size="lg" className="gap-2">
+                <Share2 className="h-5 w-5" />
+                Поделиться
               </Button>
             </div>
           </div>
         </div>
       </article>
+
+      {/* Related Articles */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
+                Читайте также
+              </h2>
+              <p className="text-muted-foreground">Другие статьи, которые могут вас заинтересовать</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {relatedArticles.map((relatedArticle, index) => (
+                <Link 
+                  key={relatedArticle.id} 
+                  to={`/news/${relatedArticle.id}`}
+                  className="group block animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-4">
+                    <img 
+                      src={relatedArticle.image} 
+                      alt={relatedArticle.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <Badge variant="secondary" className="mb-3">{relatedArticle.category}</Badge>
+                  <h3 className="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                    {relatedArticle.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{relatedArticle.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4">
+              Хотите персональные рекомендации?
+            </h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Запишитесь на консультацию и получите индивидуальную программу питания
+            </p>
+            <Button size="lg" asChild className="px-8">
+              <Link to="/contact">Записаться на консультацию</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-12 h-12 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all duration-300 animate-fade-in z-40"
+          aria-label="Наверх"
+        >
+          <ChevronUp size={24} />
+        </button>
+      )}
 
       <Footer />
     </div>
